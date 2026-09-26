@@ -36,7 +36,6 @@ model User {
   initiatedThreads  MessageThread[] @relation("InitiatorThreads")
   receivedThreads   MessageThread[] @relation("RecipientThreads")
   sentMessages      Message[]
-  reports           Report[]
 
   @@map("users")
 }
@@ -69,7 +68,6 @@ model DocumentarySeries {
   protagonists     Protagonist[]
   duos             Duo[]
   pledges          CoproductionPledge[]
-  reports          Report[]
 
   @@map("documentary_series")
 }
@@ -133,7 +131,6 @@ model Duo {
   documentary    DocumentarySeries @relation(fields: [documentaryId], references: [id], onDelete: Cascade)
   protagonistA   Protagonist @relation("ProtagonistA", fields: [protagonistAId], references: [id])
   protagonistB   Protagonist @relation("ProtagonistB", fields: [protagonistBId], references: [id])
-  reports        Report[]
 
   @@map("duos")
 }
@@ -167,10 +164,6 @@ model CoproductionPledge {
   sharesCount   Int
   amount        Decimal  @db.Decimal(10, 2)
   status        String   @default("confirmed") // 'pending', 'confirmed', 'refunded'
-  netAmount         Decimal?  @db.Decimal(10, 2)
-  platformFeeAmount Decimal?  @db.Decimal(10, 2)
-  earningsPaid      Decimal?  @default(0.00) @db.Decimal(10, 2)
-  payoutStatus      String    @default("PENDING") // 'PENDING', 'PAID'
   paymentMethod String?
   createdAt     DateTime @default(now())
 
@@ -234,33 +227,4 @@ model ExplorerCategory {
   createdAt   DateTime @default(now())
 
   @@map("explorer_categories")
-}
-
-// =========================================
-// 9. MODERATION & REPORTS
-// =========================================
-model Report {
-  id               String   @id @default(cuid())
-  reason           String
-  details          String?
-  status           String   @default("PENDING") // 'PENDING', 'RESOLVED', 'DISMISSED'
-  createdAt        DateTime @default(now())
-
-  userId           String
-  user             User     @relation(fields: [userId], references: [id])
-  duoId            String?
-  duo              Duo?     @relation(fields: [duoId], references: [id])
-  seriesId         String?
-  series           DocumentarySeries? @relation(fields: [seriesId], references: [id])
-
-  @@map("reports")
-}
-
-model PlatformConfig {
-  id        String   @id @default(cuid())
-  key       String   @unique
-  value     String
-  updatedAt DateTime @updatedAt
-
-  @@map("platform_configs")
 }

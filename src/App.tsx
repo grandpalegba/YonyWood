@@ -22,6 +22,7 @@ import { ReviewSystemScreen } from './components/ReviewSystemScreen';
 import { EditorialBackOfficeScreen } from './components/EditorialBackOfficeScreen';
 import { NavigationScreen } from './components/NavigationScreen';
 import { BottomMenu } from './components/BottomMenu';
+import { AdminDashboard } from './components/AdminDashboard';
 import { io } from 'socket.io-client';
 
 export default function App() {
@@ -210,6 +211,10 @@ export default function App() {
 
         {currentScreen.type === 'editorial_backoffice' && (
           <EditorialBackOfficeScreen onNavigate={setCurrentScreen} />
+        )}
+
+        {currentScreen.type === 'admin_dashboard' && (
+          <AdminDashboard />
         )}
 
         {currentScreen.type === 'site_map' && (

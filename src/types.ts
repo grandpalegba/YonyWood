@@ -370,4 +370,5 @@ export type ViewScreen =
   | { type: 'review_system' }
   | { type: 'forest_reviews' }
   | { type: 'site_map' }
-  | { type: 'editorial_backoffice' };
+  | { type: 'editorial_backoffice' }
+  | { type: 'admin_dashboard' };

@@ -1293,7 +1293,7 @@ async function seed() {
         passwordHash: testPasswordHash,
         firstName: 'Qoctales',
         lastName: 'Admin',
-        role: 'admin',
+        role: 'ADMIN',
         messagePermission: 'all',
         pushNewMessage: true,
         messagePreview: true,

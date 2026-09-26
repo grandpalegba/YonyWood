@@ -1,0 +1,20 @@
+--- backend/src/server.ts
++++ backend/src/server.ts
+@@ -10,6 +10,8 @@
+ import explorerRoutes from './routes/explorer';
+ import coproductionRoutes from './routes/coproduction';
+ import messagesRoutes from './routes/messages';
++import adminRoutes from './routes/admin';
++import reportsRoutes from './routes/reports';
+ 
+ import prisma from './lib/prisma';
+ import { authenticate } from './middleware/auth';
+@@ -87,6 +89,8 @@
+ app.use('/api/explorer', explorerRoutes);
+ app.use('/api/coproduction', coproductionRoutes);
+ app.use('/api/messages', messagesRoutes);
++app.use('/api/admin', authenticate, adminRoutes);
++app.use('/api/reports', authenticate, reportsRoutes);
+ 
+ // Route de santé
+ app.get('/api/health', (_req, res) => {

@@ -12,12 +12,15 @@ import {
   Film,
   Layers,
   LayoutGrid,
-  ArrowRightLeft
+  ArrowRightLeft,
+  MoreVertical,
+  Flag
 } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'motion/react';
 import { apiService } from '../services/api';
 import { ViewScreen, Duo, Protagonist } from '../types';
 import { ProtagonistTeaserModal } from './ProtagonistTeaserModal';
+import { ReportModal } from './ReportModal';
 
 interface DuoFeedScreenProps {
   onNavigate: (screen: ViewScreen) => void;
@@ -49,6 +52,7 @@ export const DuoFeedScreen: React.FC<DuoFeedScreenProps> = ({
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'duo' | 'deck'>('duo');
   const [deckActiveSide, setDeckActiveSide] = useState<'A' | 'B'>('A');
+  const [reportDuoId, setReportDuoId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -255,7 +259,14 @@ export const DuoFeedScreen: React.FC<DuoFeedScreenProps> = ({
         })()}
 
         {/* Bouton bascule Vue Duo / Vue Deck - STRICTEMENT SUR LA MÊME LIGNE MÉDIANE HORIZONTALE */}
-        <div className="flex items-center justify-end w-16 sm:w-20">
+        <div className="flex items-center justify-end w-16 sm:w-20 gap-1.5">
+          <button
+            onClick={() => currentDuo && setReportDuoId(currentDuo.id)}
+            className="flex items-center justify-center h-7.5 sm:h-8.5 w-7.5 sm:w-8.5 rounded-full hover:bg-red-50 text-stone-400 hover:text-red-500 transition-all cursor-pointer active:scale-95"
+            title="Signaler ce contenu"
+          >
+            <Flag className="w-3.5 h-3.5" />
+          </button>
           <button
             onClick={() => setViewMode(prev => prev === 'duo' ? 'deck' : 'duo')}
             className="flex items-center gap-1 h-7.5 sm:h-8.5 px-2.5 sm:px-3 rounded-full bg-white hover:bg-[#A2482B] border border-stone-200 hover:border-[#A2482B] text-[#1C1917] hover:text-white text-[11px] sm:text-xs font-semibold shadow-xs transition-all cursor-pointer active:scale-95 group/modetoggle"
@@ -923,6 +934,15 @@ export const DuoFeedScreen: React.FC<DuoFeedScreenProps> = ({
           onNavigate({ type: 'protagonist_profile', protagonistId: id });
         }}
       />
+
+      {/* Modal de signalement */}
+      {reportDuoId && (
+        <ReportModal
+          targetId={reportDuoId}
+          targetType="duo"
+          onClose={() => setReportDuoId(null)}
+        />
+      )}
     </div>
   );
 };
