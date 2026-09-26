@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: yonywood-postgres
+    environment:
+      POSTGRES_USER: yonywood
+      POSTGRES_PASSWORD: yonywood_password
+      POSTGRES_DB: yonywood_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

@@ -9,6 +9,7 @@ import {
   ShoppingBag,
   Coins,
   HeartHandshake,
+  Crown,
   X,
   Camera,
   MapPin,
@@ -1632,6 +1633,24 @@ export const ProfileSettingsScreen: React.FC<ProfileSettingsScreenProps> = ({
                   title="Paramètres & Séries du flux"
                 >
                   <Sliders className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1C1917] group-hover:text-white transition-colors" />
+                </button>
+
+                {/* Bouton Admin Dashboard */}
+                <button
+                  onClick={() => onNavigate({ type: 'admin_dashboard' })}
+                  id="btn-profile-admin"
+                  className="group hidden sm:flex h-8 sm:h-8.5 px-3 rounded-full bg-[#1C1917] hover:bg-[#C89B3C] border border-transparent text-white text-xs font-semibold transition-all shadow-xs items-center gap-1.5 cursor-pointer whitespace-nowrap ml-2"
+                  title="Tableau de bord Administrateur"
+                >
+                  <Crown className="w-3.5 h-3.5 text-[#C89B3C] group-hover:text-white transition-colors" />
+                  <span>Admin</span>
+                </button>
+                <button
+                  onClick={() => onNavigate({ type: 'admin_dashboard' })}
+                  className="sm:hidden group w-8 h-8 rounded-full bg-[#1C1917] hover:bg-[#C89B3C] border border-transparent text-white flex items-center justify-center transition-all shadow-xs cursor-pointer ml-1"
+                  title="Admin Dashboard"
+                >
+                  <Crown className="w-3.5 h-3.5 text-[#C89B3C] group-hover:text-white transition-colors" />
                 </button>
               </>
             ) : (
