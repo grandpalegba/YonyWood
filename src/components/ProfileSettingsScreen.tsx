@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { 
   Sliders,
   ChevronLeft,
@@ -336,8 +337,25 @@ export const ProfileSettingsScreen: React.FC<ProfileSettingsScreenProps> = ({
   returnToDuoIndex,
   returnToDocId
 }) => {
+  const { user, logout } = useAuth();
   // Déterminer le mode : Propriétaire ou Visiteur
   const isOwner = !protagonistId || protagonistId === 'me';
+
+  // Handling unauthorized owner
+  if (isOwner && !user) {
+    return (
+      <div className="min-h-screen bg-[#0E0D0B] text-white flex flex-col items-center justify-center p-6 text-center">
+        <h2 className="text-3xl font-bold mb-4 text-[#C89B3C]">Bienvenue sur Yonywood</h2>
+        <p className="text-gray-300 mb-8 max-w-md">Connectez-vous pour accéder à votre profil, vos documentaires et vos préférences.</p>
+        <button 
+          onClick={() => onNavigate({ type: 'auth', returnTo: 'profile' } as any)} 
+          className="bg-[#C89B3C] text-black font-semibold py-3 px-8 rounded-full hover:bg-[#D4A373] transition-colors"
+        >
+          Se connecter / S'inscrire
+        </button>
+      </div>
+    );
+  }
 
   // Résolution du protagoniste cible (depuis MATRIX_SERIES_DATA ou PROTAGONISTS)
   const targetProtagonist = React.useMemo<Protagonist | null>(() => {
@@ -458,14 +476,18 @@ export const ProfileSettingsScreen: React.FC<ProfileSettingsScreenProps> = ({
   };
 
   // Identité du profil affiché
+  const isAdmin = user?.email === 'qoctales@gmail.com' || user?.role === 'ADMIN';
+  const fallbackFirstName = isAdmin ? 'Romeo' : (user?.firstName || 'Amina');
+  const fallbackFullName = isAdmin ? 'Romeo Nonvide' : (user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email.split('@')[0] : 'Amina Traoré');
+
   const [userName, setUserName] = useState<string>(
-    targetProtagonist ? targetProtagonist.name : 'Amina'
+    targetProtagonist ? targetProtagonist.name : fallbackFirstName
   );
   const [userFullName, setUserFullName] = useState<string>(
-    targetProtagonist ? targetProtagonist.name : 'Amina Traoré'
+    targetProtagonist ? targetProtagonist.name : fallbackFullName
   );
   const [userRole, setUserRole] = useState<string>(
-    targetProtagonist ? targetProtagonist.role : 'Passeuse de mémoires sonores & artisane'
+    targetProtagonist ? targetProtagonist.role : (isAdmin ? 'Administrateur / Créateur' : 'Passeuse de mémoires sonores & artisane')
   );
   const [userTerritory, setUserTerritory] = useState<string>(
     targetProtagonist ? `${targetProtagonist.territory}, ${targetProtagonist.country}` : 'Ganvié & Cotonou, Bénin'
@@ -1635,23 +1657,40 @@ export const ProfileSettingsScreen: React.FC<ProfileSettingsScreenProps> = ({
                   <Sliders className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1C1917] group-hover:text-white transition-colors" />
                 </button>
 
+                {/* Bouton Logout */}
+                <button
+                  onClick={() => {
+                    logout();
+                    onNavigate({ type: 'home' });
+                  }}
+                  id="btn-profile-logout"
+                  className="group w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full bg-white hover:bg-red-600 border border-stone-200 hover:border-red-600 text-[#1C1917] hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95"
+                  title="Se déconnecter"
+                >
+                  <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1C1917] group-hover:text-white transition-colors" />
+                </button>
+
                 {/* Bouton Admin Dashboard */}
-                <button
-                  onClick={() => onNavigate({ type: 'admin_dashboard' })}
-                  id="btn-profile-admin"
-                  className="group hidden sm:flex h-8 sm:h-8.5 px-3 rounded-full bg-[#1C1917] hover:bg-[#C89B3C] border border-transparent text-white text-xs font-semibold transition-all shadow-xs items-center gap-1.5 cursor-pointer whitespace-nowrap ml-2"
-                  title="Tableau de bord Administrateur"
-                >
-                  <Crown className="w-3.5 h-3.5 text-[#C89B3C] group-hover:text-white transition-colors" />
-                  <span>Admin</span>
-                </button>
-                <button
-                  onClick={() => onNavigate({ type: 'admin_dashboard' })}
-                  className="sm:hidden group w-8 h-8 rounded-full bg-[#1C1917] hover:bg-[#C89B3C] border border-transparent text-white flex items-center justify-center transition-all shadow-xs cursor-pointer ml-1"
-                  title="Admin Dashboard"
-                >
-                  <Crown className="w-3.5 h-3.5 text-[#C89B3C] group-hover:text-white transition-colors" />
-                </button>
+                {isAdmin && (
+                  <>
+                    <button
+                      onClick={() => onNavigate({ type: 'admin_dashboard' })}
+                      id="btn-profile-admin"
+                      className="group hidden sm:flex h-8 sm:h-8.5 px-3 rounded-full bg-[#1C1917] hover:bg-[#C89B3C] border border-transparent text-white text-xs font-semibold transition-all shadow-xs items-center gap-1.5 cursor-pointer whitespace-nowrap ml-2"
+                      title="Tableau de bord Administrateur"
+                    >
+                      <Crown className="w-3.5 h-3.5 text-[#C89B3C] group-hover:text-white transition-colors" />
+                      <span>Admin</span>
+                    </button>
+                    <button
+                      onClick={() => onNavigate({ type: 'admin_dashboard' })}
+                      className="sm:hidden group w-8 h-8 rounded-full bg-[#1C1917] hover:bg-[#C89B3C] border border-transparent text-white flex items-center justify-center transition-all shadow-xs cursor-pointer ml-1"
+                      title="Admin Dashboard"
+                    >
+                      <Crown className="w-3.5 h-3.5 text-[#C89B3C] group-hover:text-white transition-colors" />
+                    </button>
+                  </>
+                )}
               </>
             ) : (
               <>

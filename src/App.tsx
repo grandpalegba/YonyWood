@@ -23,11 +23,22 @@ import { EditorialBackOfficeScreen } from './components/EditorialBackOfficeScree
 import { NavigationScreen } from './components/NavigationScreen';
 import { BottomMenu } from './components/BottomMenu';
 import { AdminDashboard } from './components/AdminDashboard';
+import { OnboardingScreen } from './components/OnboardingScreen';
+import { AuthScreen } from './components/AuthScreen';
 import { io } from 'socket.io-client';
 
 export default function App() {
-  // Arrive directly on the Explorer Astrolabe screen
-  const [currentScreen, setCurrentScreen] = useState<ViewScreen>({ type: 'home' });
+  const [currentScreen, setCurrentScreen] = useState<ViewScreen>(() => {
+    if (!localStorage.getItem('onboarding_seen')) {
+      return { type: 'onboarding' };
+    }
+    return { type: 'home' };
+  });
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('onboarding_seen', 'true');
+    setCurrentScreen({ type: 'home' });
+  };
 
   // User preferences & series filter state with localStorage persistence
   const [selectedSeriesFilter, setSelectedSeriesFilter] = useState<string[]>(() => {
@@ -81,6 +92,27 @@ export default function App() {
       
       {/* Main Content Area - Direct immersion */}
       <main className="flex-1">
+        {currentScreen.type === 'onboarding' && (
+          <OnboardingScreen 
+            onGuest={handleOnboardingComplete}
+            onLogin={() => {
+              localStorage.setItem('onboarding_seen', 'true');
+              setCurrentScreen({ type: 'auth', returnTo: 'home' });
+            }}
+            onRegister={() => {
+              localStorage.setItem('onboarding_seen', 'true');
+              setCurrentScreen({ type: 'auth', returnTo: 'home' }); // Could pass initialTab='register' if supported in ViewScreen
+            }}
+          />
+        )}
+
+        {currentScreen.type === 'auth' && (
+          <AuthScreen 
+            onSuccess={() => setCurrentScreen({ type: currentScreen.returnTo || 'home' } as any)}
+            onBack={() => setCurrentScreen({ type: 'home' })}
+          />
+        )}
+
         {currentScreen.type === 'home' && (
           <MatrixExplorer onNavigate={setCurrentScreen} />
         )}

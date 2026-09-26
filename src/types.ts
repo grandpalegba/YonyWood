@@ -371,4 +371,14 @@ export type ViewScreen =
   | { type: 'forest_reviews' }
   | { type: 'site_map' }
   | { type: 'editorial_backoffice' }
+  | { type: 'onboarding' }
+  | { type: 'auth'; returnTo?: string; initialTab?: 'login' | 'register' }
   | { type: 'admin_dashboard' };
+
+export interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  role: 'USER' | 'ADMIN';
+}
